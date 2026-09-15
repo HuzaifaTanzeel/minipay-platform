@@ -1,26 +1,39 @@
-# Paysys Labs – Implementation & L2 Support Engineer Technical Assessment
+# MiniPay
 
-**Time window:** Submit within 48 hours of receiving the assessment.  
-**Expected hands-on effort:** Approximately 6–10 hours.  
-**Submission:** Public GitHub repository.
+Small payment-processing platform: a REST API and web UI in front of PostgreSQL, with Kubernetes deployment, automated tests, SQL investigation, and L2 support tooling. Built to practise reproducible local/K8s setups, safe config and secrets, and operational documentation.
 
-## Objective
-This assessment evaluates practical ability to implement, operate, troubleshoot, test, and automate support for a small enterprise-style application. We value investigation, engineering judgement, automation, documentation, and effective use of AI more than memorized commands.
+**Status:** local PostgreSQL (Compose), schema, ~50k-row seed, optional pgAdmin. Application services and cluster manifests are not in the default path yet.
 
-## Scenario
-You are joining an implementation/L2 support team responsible for **MiniPay**, a small payment-processing application. It consists of a web UI, REST services, and a relational database. Your assignment is to deploy and operate the environment, demonstrate database and web-service proficiency, automate testing, build a support utility, and investigate production-style incidents.
+## Quick start
 
-## Skills assessed
-1. Linux
-2. Git
-3. SQL
-4. Kubernetes
-5. Rancher
-6. Python utilities/automation
-7. Web services
-8. API test automation
-9. GUI test automation
-10. L2 troubleshooting and documentation
-11. Effective and responsible use of AI tools
+```powershell
+copy .env.example .env
+# set DB_PASSWORD (and matching URLs) in .env — do not commit .env
+docker compose up -d db
+python database/generate_data.py | docker compose exec -T db psql -U minipay -d minipay -v ON_ERROR_STOP=1
+```
 
-Read `INSTRUCTIONS.md` before starting. The files under `requirements/` define the tasks. The `incidents/` folder contains support incidents to investigate.
+Full steps: [SETUP.md](SETUP.md). Database notes: [database/README.md](database/README.md).
+
+## Repository layout
+
+| Path | Purpose |
+|---|---|
+| [SETUP.md](SETUP.md) | Run what exists today |
+| [ARCHITECTURE.md](ARCHITECTURE.md) | Components and data flow (current + planned) |
+| [AI_USAGE.md](AI_USAGE.md) | How AI tools were used and validated |
+| `database/` | Schema, seed generator, Compose init extras |
+| `sql/` | Reporting queries and performance notes (planned) |
+| `kubernetes/` | Cluster manifests (planned) |
+| `python/` | L2 support CLI (planned) |
+| `tests/api/`, `tests/ui/` | Automated tests (planned) |
+| `investigation/` | Incident post-mortems (planned) |
+| `evidence/` | Command output and redacted screenshots (planned) |
+
+## Conventions
+
+Humans own git (commits, PRs, tags). Cursor project skills live under `.cursor/skills/` (platform conventions, RCA shape, repo hygiene scan). Configuration is environment-based; no secrets in YAML or git.
+
+## License
+
+MIT. See [LICENSE](LICENSE).
