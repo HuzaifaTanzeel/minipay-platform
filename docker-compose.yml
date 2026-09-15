@@ -24,6 +24,53 @@ services:
       timeout: 3s
       retries: 10
 
+  api:
+    build: ./backend
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      # Inside the compose network the database host is the service name `db`,
+      # so override the host-oriented DATABASE_URL from .env.
+      DATABASE_URL: postgresql://${DB_USER:-minipay}:${DB_PASSWORD:?Set DB_PASSWORD in .env}@db:5432/${DB_NAME:-minipay}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+    ports:
+      - "127.0.0.1:8000:8000"
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8000/health',timeout=2).status==200 else 1)",
+        ]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+      start_period: 15s
+    depends_on:
+      db:
+        condition: service_healthy
+
+  web:
+    build: ./frontend
+    restart: unless-stopped
+    environment:
+      # nginx renders these into its config at start; the API key is injected
+      # into proxied /api requests so it never reaches the browser bundle.
+      API_UPSTREAM: api:8000
+      API_KEY: ${API_KEY:?Set API_KEY in .env}
+    ports:
+      - "127.0.0.1:8080:80"
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1/"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+
   pgadmin:
     image: dpage/pgadmin4:8
     profiles: ["tools"]
