@@ -2,16 +2,18 @@
 
 Small payment-processing platform: a REST API and web UI in front of PostgreSQL, with Kubernetes deployment, automated tests, SQL investigation, and L2 support tooling. Built to practise reproducible local/K8s setups, safe config and secrets, and operational documentation.
 
-**Status:** local PostgreSQL (Compose), schema, ~50k-row seed, optional pgAdmin. Application services and cluster manifests are not in the default path yet.
+**Status:** local PostgreSQL, FastAPI, and React UI via Docker Compose, schema, ~50k-row seed, optional pgAdmin. Cluster manifests are not in the default path yet.
 
 ## Quick start
 
 ```powershell
 copy .env.example .env
-# set DB_PASSWORD (and matching URLs) in .env — do not commit .env
-docker compose up -d db
+# set DB_PASSWORD, API_KEY (and matching URLs) in .env — do not commit .env
+docker compose up -d --build
 python database/generate_data.py | docker compose exec -T db psql -U minipay -d minipay -v ON_ERROR_STOP=1
 ```
+
+UI: http://localhost:8080. API: http://localhost:8000.
 
 Full steps: [SETUP.md](SETUP.md). Database notes: [database/README.md](database/README.md).
 
@@ -23,6 +25,8 @@ Full steps: [SETUP.md](SETUP.md). Database notes: [database/README.md](database/
 | [ARCHITECTURE.md](ARCHITECTURE.md) | Components and data flow (current + planned) |
 | [AI_USAGE.md](AI_USAGE.md) | How AI tools were used and validated |
 | `database/` | Schema, seed generator, Compose init extras |
+| `backend/` | FastAPI service |
+| `frontend/` | React UI (served by nginx in Compose) |
 | `sql/` | Reporting queries and performance notes (planned) |
 | `kubernetes/` | Cluster manifests (planned) |
 | `python/` | L2 support CLI (planned) |
