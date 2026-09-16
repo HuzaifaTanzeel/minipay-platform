@@ -2,7 +2,7 @@
 
 How to run what this repository currently ships. Credentials live in `.env` (copy from `.env.example`). Never commit `.env`, tokens, or private keys.
 
-**Current scope:** PostgreSQL 16, FastAPI, and the React UI via Docker Compose, plus schema, synthetic seed, optional pgAdmin. Kubernetes manifests, automated tests, and the support CLI are not in this tree yet.
+**Current scope:** PostgreSQL 16, FastAPI, and the React UI via Docker Compose, plus schema, synthetic seed, SQL reports, optional pgAdmin, and the L2 support CLI. Kubernetes manifests and API/UI automated tests are not in this tree yet.
 
 ## Prerequisites
 
@@ -44,7 +44,21 @@ python database/generate_data.py | docker compose exec -T db psql -U minipay -d 
 
 Checks and expected counts: [database/README.md](database/README.md).
 
-## 4. Optional pgAdmin
+## 4. L2 support CLI
+
+Install CLI deps (once), then point it at the same database as Compose:
+
+```powershell
+python -m pip install -r python/requirements.txt
+$env:MINIPAY_DB_DSN = "postgresql://minipay:<password>@localhost:5432/minipay"
+python python/support_tool.py --transaction TXN00000001
+python python/support_tool.py --transaction TXN00004999 --json
+python -m pytest python/tests -q
+```
+
+Use the same password as `DB_PASSWORD` in `.env`. Config, exit codes, and sample output: [python/README.md](python/README.md).
+
+## 5. Optional pgAdmin
 
 ```powershell
 docker compose --profile tools up -d
@@ -66,4 +80,4 @@ docker compose down -v
 
 ## What is not set up yet
 
-`sql/` reporting scripts, Kubernetes, Rancher, pytest, and the Python support tool. Those will be documented here as they land. Full submission layout (architecture, AI usage, investigation, tests, evidence) is listed in the repository root README.
+Kubernetes, Rancher, and API/UI pytest suites. Those will be documented here as they land. Full layout (architecture, AI usage, investigation, tests, evidence) is listed in the repository root README.
