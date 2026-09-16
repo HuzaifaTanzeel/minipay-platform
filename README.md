@@ -2,7 +2,7 @@
 
 Small payment-processing platform: a REST API and web UI in front of PostgreSQL, with Kubernetes deployment, automated tests, SQL investigation, and L2 support tooling. Built to practise reproducible local/K8s setups, safe config and secrets, and operational documentation.
 
-**Status:** local PostgreSQL, FastAPI, and React UI via Docker Compose, schema, ~50k-row seed, optional pgAdmin. Cluster manifests are not in the default path yet.
+**Status:** local PostgreSQL, FastAPI, and React UI via Docker Compose, schema, seed, SQL reports, L2 support CLI, optional pgAdmin. Cluster manifests are not in the default path yet.
 
 ## Quick start
 
@@ -27,9 +27,9 @@ Full steps: [SETUP.md](SETUP.md). Database notes: [database/README.md](database/
 | `database/` | Schema, seed generator, Compose init extras |
 | `backend/` | FastAPI service |
 | `frontend/` | React UI (served by nginx in Compose) |
-| `sql/` | Reporting queries and performance notes (planned) |
+| `sql/` | Reporting queries and performance notes |
 | `kubernetes/` | Cluster manifests (planned) |
-| `python/` | L2 support CLI (planned) |
+| [python/](python/README.md) | L2 support CLI (`python python/support_tool.py --transaction REF`) |
 | `tests/api/`, `tests/ui/` | Automated tests (planned) |
 | `investigation/` | Incident post-mortems (planned) |
 | `evidence/` | Command output and redacted screenshots (planned) |
