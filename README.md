@@ -34,7 +34,7 @@ Full steps: [SETUP.md](SETUP.md). Database notes: [database/README.md](database/
 | [python/](python/README.md) | L2 support CLI (`python python/support_tool.py --transaction REF`) |
 | [tests/api/](tests/api/NOTES.md) | API pytest (`python -m pytest tests/api -v`) |
 | [tests/ui/](tests/ui/README.md) | Playwright UI tests — headless: `python -m pytest -c tests/ui/pytest.ini tests/ui -v` · headed: add `--headed` |
-| `investigation/` | Incident post-mortems (planned) |
+| `investigation/` | Incident post-mortems |
 | `evidence/` | Command output, UI HTML report, redacted screenshots |
 
 ## Conventions
