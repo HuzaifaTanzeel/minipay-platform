@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 
 random.seed(42)
 N_CUSTOMERS = 1000
-N_TX = 50000
+N_TX = 500000
 base = datetime(2026, 9, 1, 0, 0, 0)
 
 def ts(dt):
