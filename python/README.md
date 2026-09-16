@@ -16,11 +16,14 @@ python/support_tool/
 
 ## Install
 
-From the repository root (Python 3.12+):
+Use the repo venv (same install as API and UI tests). From the repository root:
 
 ```powershell
-python -m pip install -r python/requirements.txt
+.\scripts\setup-venv.ps1
+.\.venv\Scripts\Activate.ps1
 ```
+
+CLI-only deps are [requirements.txt](requirements.txt); the bootstrap installs them via the root [requirements-dev.txt](../requirements-dev.txt). Do not pip-install into the system interpreter.
 
 ## Configuration
 

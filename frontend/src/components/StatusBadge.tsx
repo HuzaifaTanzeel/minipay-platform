@@ -7,9 +7,15 @@ const VARIANT: Record<PaymentStatus, "success" | "danger" | "warning"> = {
   PROCESSING: "warning",
 };
 
-export function StatusBadge({ status }: { status: PaymentStatus }) {
+export function StatusBadge({
+  status,
+  testId = "status-badge",
+}: {
+  status: PaymentStatus;
+  testId?: string;
+}) {
   return (
-    <Badge variant={VARIANT[status] ?? "secondary"} data-testid="status-badge">
+    <Badge variant={VARIANT[status] ?? "secondary"} data-testid={testId}>
       {status}
     </Badge>
   );
