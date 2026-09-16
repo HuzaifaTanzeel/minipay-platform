@@ -13,6 +13,8 @@ I used Cursor while building this. I still ran everything locally, edited what i
 - SQL queries and “what should EXPLAIN look like” questions
 - The L2 CLI under `python/`
 - Commit message / PR wording
+- Created API and UI Tests using Cursor, also created a negative Scneario to verify that the test fails by removing greater than 0 check on Payment page.
+- Created Grafana Dashbaord
 
 ## Some actual asks
 
@@ -34,4 +36,4 @@ Same for SQL: I ran the statements in psql, not just from the chat.
 
 ## Something I changed
 
-First version of the CLI called `GET /api/payments/{ref}`. That hid the duplicate rows (the API used to 500 on `TXN00004999`). I made it query Postgres and return every matching row instead, so you still get the duplicate warning and a next step.
+First version of the CLI called `GET /api/payments/{ref}`. That is useless for `TXN00004999` because the API 500s. I made it query Postgres and return every matching row instead, so you still get the duplicate warning and a next step.
