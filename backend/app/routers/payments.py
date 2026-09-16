@@ -80,8 +80,8 @@ def get_payment(
     ref: str,
     svc: PaymentService = Depends(get_payment_service),
 ):
-    # INCIDENT-001: duplicate transaction_ref values (e.g. TXN00004999) raise
-    # MultipleRowsError inside the service and surface as a 500. Left as-is.
+    # Duplicate transaction_ref values raise MultipleRowsError in the service
+    # and are returned as 409 REFERENCE_AMBIGUOUS.
     return svc.get_payment(ref)
 
 

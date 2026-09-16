@@ -1,0 +1,11 @@
+﻿-- Attempted on the live Compose database (500k-row seed).
+-- This is NOT applied. Postgres rejected it because transaction_ref is not unique.
+
+ALTER TABLE transactions ADD CONSTRAINT uq_transactions_ref UNIQUE (transaction_ref);
+
+ERROR:  could not create unique index "uq_transactions_ref"
+DETAIL:  Key (transaction_ref)=(TXN00354999) is duplicated.
+CONTEXT:  parallel worker
+
+-- After a cleanup runbook, the lasting schema change is
+-- CREATE UNIQUE INDEX CONCURRENTLY uq_transactions_ref ON transactions (transaction_ref);

@@ -49,8 +49,8 @@ class PgPaymentRepository:
     """psycopg-backed implementation of the PaymentRepository protocol."""
 
     def get_by_ref(self, cur, ref: str) -> Row | None:
-        # INCIDENT-001: strict single-row fetch. Raises MultipleRowsError for
-        # duplicate transaction_ref values in the seed data (e.g. TXN00004999).
+        # Strict single-row fetch. Raises MultipleRowsError when more than one
+        # transaction shares this transaction_ref (seed duplicates).
         return fetch_one_strict(cur, _SELECT_JOINED + "WHERE t.transaction_ref = %s", (ref,))
 
     def get_by_id(self, cur, txn_id: int) -> Row | None:

@@ -1,4 +1,4 @@
-"""Payments: create/get, validation, idempotency, pagination, latency, planted 500."""
+"""Payments: create/get, validation, idempotency, pagination, latency, ambiguous refs."""
 from __future__ import annotations
 
 import os
@@ -211,16 +211,16 @@ def test_lookup_latency_p50_under_300ms(api):
 
 
 def test_duplicate_reference_lookup(api):
-    """server/API error behavior — TXN00004999 is a planted 500 (Incident 1).
-
-    After the lookup fix this should become 409 REFERENCE_AMBIGUOUS.
-    """
+    """duplicate seed ref is 409 REFERENCE_AMBIGUOUS with both row ids."""
     r = api.request("GET", "/api/payments/TXN00004999")
-    assert r.status_code == 500
+    assert r.status_code == 409
     body = r.json()
     jsonschema.validate(body, ERROR_ENVELOPE)
-    assert body["error"]["code"] == "INTERNAL_ERROR"
+    assert body["error"]["code"] == "REFERENCE_AMBIGUOUS"
     assert body["error"]["request_id"]
+    ids = body["error"]["ids"]
+    assert isinstance(ids, list) and len(ids) == 2
+    assert all(isinstance(i, int) for i in ids)
 
 
 @pytest.mark.skipif(

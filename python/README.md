@@ -80,8 +80,9 @@ python python/support_tool.py --help
 | 3 | missing config, or database/API probe failed |
 | 130 | interrupted (`Ctrl+C`) |
 
-`--transaction TXN00004999` is expected to exit **2** (`DUPLICATE_REFERENCE`)
-while `GET /api/payments/TXN00004999` still returns 500.
+`--transaction TXN00004999` is expected to exit **2** (`DUPLICATE_REFERENCE`).
+`GET /api/payments/TXN00004999` returns 409 `REFERENCE_AMBIGUOUS` with both
+ids; the CLI still reads Postgres so it works if the API is down.
 
 ## Sample text (`--transaction TXN00000001`)
 
@@ -117,7 +118,7 @@ RECOMMENDATION
 
 ## Sample (`--transaction TXN00004999`)
 
-Same database. The API still returns 500 for this ref; the CLI loads both rows (exit 2):
+Same database. The API returns 409 for this ref; the CLI loads both rows (exit 2):
 
 ```text
 TRANSACTION

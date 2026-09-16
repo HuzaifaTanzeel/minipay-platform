@@ -1,0 +1,16 @@
+GET http://localhost:8080/api/payments/TXN00004999
+(nginx injects X-API-Key; key not recorded)
+
+HTTP headers:
+HTTP/1.1 409 Conflict
+Server: nginx/1.27.5
+Date: Wed, 16 Sep 2026 15:50:15 GMT
+Content-Type: application/json
+Content-Length: 168
+Connection: keep-alive
+x-request-id: 77a2e66f6554
+
+Body:
+{"error":{"code":"REFERENCE_AMBIGUOUS","message":"reference maps to multiple transactions; use /api/payments/by-id/{id}","request_id":"77a2e66f6554","ids":[4999,5000]}}
+
+Contrast: GET /api/payments/TXN00000001 still 200 (x-request-id 008ee918644d).

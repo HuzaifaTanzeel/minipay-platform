@@ -1,0 +1,17 @@
+﻿GET /api/payments/TXN00004999  request_id=54a82d7d3bfd
+
+JSON access/error line:
+{"ts": "2026-09-16T15:39:25", "level": "ERROR", "logger": "app.errors", "request_id": "54a82d7d3bfd", "msg": "unhandled error"}
+INFO: 172.18.0.5 - "GET /api/payments/TXN00004999 HTTP/1.0" 500 Internal Server Error
+
+Cause (end of traceback):
+  File "/srv/app/services/payment_service.py", line 87, in get_payment
+    row = self._payments.get_by_ref(cur, ref)
+  File "/srv/app/repositories/payments.py", line 54, in get_by_ref
+    return fetch_one_strict(cur, ... WHERE t.transaction_ref = %s, (ref,))
+  File "/srv/app/db/helpers.py", line 25, in fetch_one_strict
+    raise MultipleRowsError(...)
+app.db.helpers.MultipleRowsError: expected one row, got more for params=('TXN00004999',)
+
+Contrast (same second):
+{"request_id": "a02cb9a21ad2", "method": "GET", "path": "/api/payments/TXN00000001", "status": 200}
