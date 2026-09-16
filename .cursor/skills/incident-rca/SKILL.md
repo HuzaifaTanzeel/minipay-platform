@@ -2,61 +2,49 @@
 name: incident-rca
 description: >-
   Structures MiniPay incident post-mortems (RCA). Use when drafting or editing
-  investigation/INCIDENT-*-RCA.md, kubernetes-findings.md, or similar
-  operational write-ups. Do not invent root causes without evidence. Do not
-  use for git commits or pull requests.
+  investigation/INCIDENT-*-RCA.md or kubernetes-findings.md. Do not invent root
+  causes without evidence. Do not use for git commits or pull requests.
 ---
 
 # Incident RCA
 
-Use this shape. Prefer evidence over narrative. Rejected hypotheses are required.
+Keep it short. Evidence over story. At least one **rejected** hypothesis.
 
 ```markdown
 # INCIDENT-00X – <title>
 
-| Field | Value |
+| | |
 |---|---|
 | Severity | P1 / P2 |
 | Status | Resolved |
-| Detected | user report / probe / test |
 | Components | api / db / kubernetes |
 | Author | |
 
-## 1. Summary
-Three lines: what broke, who was affected, what restored service.
+## What happened
+Two or three sentences: symptom, who felt it, what we changed.
 
-## 2. Observations and reproduction
-Commands, transaction refs, HTTP status. What worked vs what failed.
+## How we reproduced it
+Commands, refs, status codes. What still worked.
 
-## 3. Evidence
-Logs (`request_id`), `kubectl describe` / endpoints, `EXPLAIN`, test output.
-Link files under `evidence/`. Paste trimmed command output, not screenshots of terminals.
+## Evidence
+Link files under `evidence/`. Quote only the numbers that matter (e.g. execution time).
 
-## 4. Hypotheses considered
-| # | Hypothesis | How tested | Result |
-Include at least one hypothesis that was **rejected**, with the evidence that killed it.
+## Hypotheses
+| Hypothesis | Test | Result |
+|---|---|---|
+Include one that you **rejected**.
 
-## 5. Root cause
-Trigger vs underlying cause. Name the file, line, or config key.
+## Cause
+Trigger vs underlying cause. Name the object (table, probe, selector).
 
-## 6. Immediate corrective action
-What restored service in the first minutes.
+## Fix
+Immediate (if any) and lasting change (`path` / commit when you have it).
 
-## 7. Permanent corrective action
-The lasting code/config change (commit hash when available).
+## Check
+What you re-ran and the after result.
 
-## 8. Validation
-Test added, command rerun, before/after.
-
-## 9. Preventive controls
-Detection (alert/probe/test), prevention (lint/review), runbook update.
-
-## 10. Timeline
-| T+ | Event |
+## Prevent
+One detection + one prevention (test, index review, probe).
 ```
 
-## Rules
-- Do not skip the hypotheses table.
-- Do not claim a unique constraint on `transaction_ref` as a fix if existing rows already duplicate.
-- For Kubernetes incidents, include `kubectl get endpoints` and probe failures, not only “pods were running”.
-- Write as a production drill / post-mortem, not as an exam answer.
+Do not treat this as an exam answer. Do not add `UNIQUE(transaction_ref)` if seed already has duplicates.

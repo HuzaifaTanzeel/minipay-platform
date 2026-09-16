@@ -17,3 +17,5 @@ Get-Content sql\01_count_value_by_status_day.sql | docker compose exec -T db psq
 | `05_daily_success_rate.sql` | Daily success rate % |
 | `06_reconciliation_callbacks.sql` | SUCCESS vs callback SUCCESS |
 | `07_processing_time_avg_p95.sql` | Average and p95 duration |
+| `00_indexes_v1.sql` | Indexes for lookup / customer list / PROCESSING |
+| [PERFORMANCE.md](PERFORMANCE.md) | Before/after times (500k-row measurement) |
