@@ -1,8 +1,9 @@
 """API-key authentication for /api/* routes.
 
 Uses a constant-time comparison to avoid leaking the key via timing.
-/health, /ready and the server-rendered UI stay unauthenticated (the UI
-posts server-side, so the key never reaches the browser).
+/health, /ready, /metrics and the UI stay unauthenticated (the UI
+posts server-side, so the key never reaches the browser). Prometheus
+scrapes /metrics without X-API-Key.
 """
 import secrets
 
