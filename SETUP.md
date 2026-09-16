@@ -2,7 +2,7 @@
 
 How to run what this repository currently ships. Credentials live in `.env` (copy from `.env.example`). Never commit `.env`, tokens, or private keys.
 
-**Current scope:** PostgreSQL 16, FastAPI, and the React UI via Docker Compose, plus schema, synthetic seed, SQL reports, optional pgAdmin, and the L2 support CLI. Kubernetes manifests and API/UI automated tests are not in this tree yet.
+**Current scope:** PostgreSQL 16, FastAPI, and the React UI via Docker Compose, plus schema, synthetic seed, SQL reports, optional pgAdmin, the L2 support CLI, and API pytest. Kubernetes manifests and UI automated tests are not in this tree yet.
 
 ## Prerequisites
 
@@ -58,7 +58,20 @@ python -m pytest python/tests -q
 
 Use the same password as `DB_PASSWORD` in `.env`. Config, exit codes, and sample output: [python/README.md](python/README.md).
 
-## 5. Optional pgAdmin
+## 5. API tests
+
+Compose `api` must be healthy and the database seeded. Install test deps once, then:
+
+```powershell
+python -m pip install -r backend/requirements-dev.txt
+python -m pytest tests/api -v
+```
+
+`API_KEY` is taken from `.env` if you do not export it. Timeouts, retries, and 4xx vs 5xx: [tests/api/NOTES.md](tests/api/NOTES.md).
+
+Stopping Postgres for `/ready` 503 is skipped unless you set `MINIPAY_ALLOW_DESTRUCTIVE=1` (the suite restarts `db` afterwards).
+
+## 6. Optional pgAdmin
 
 ```powershell
 docker compose --profile tools up -d
@@ -80,4 +93,4 @@ docker compose down -v
 
 ## What is not set up yet
 
-Kubernetes, Rancher, and API/UI pytest suites. Those will be documented here as they land. Full layout (architecture, AI usage, investigation, tests, evidence) is listed in the repository root README.
+Kubernetes, Rancher, and UI pytest. Those will be documented here as they land. Full layout (architecture, AI usage, investigation, tests, evidence) is listed in the repository root README.

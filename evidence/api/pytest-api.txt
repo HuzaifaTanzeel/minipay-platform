@@ -1,0 +1,30 @@
+============================= test session starts =============================
+platform win32 -- Python 3.14.3, pytest-8.4.2
+rootdir: D:\Interviews\Paysys\minipay-platform
+collected 23 items
+
+tests/api/test_auth.py::test_missing_api_key_401 PASSED
+tests/api/test_auth.py::test_wrong_api_key_403 PASSED
+tests/api/test_auth.py::test_health_needs_no_key PASSED
+tests/api/test_customers.py::test_create_customer_201 PASSED
+tests/api/test_customers.py::test_create_customer_duplicate_409 PASSED
+tests/api/test_customers.py::test_create_customer_missing_name_422 PASSED
+tests/api/test_health.py::test_health_ok PASSED
+tests/api/test_health.py::test_ready_ok PASSED
+tests/api/test_payments.py::test_create_payment_201_schema PASSED
+tests/api/test_payments.py::test_create_payment_negative_amount_422 PASSED
+tests/api/test_payments.py::test_create_payment_three_dp_422 PASSED
+tests/api/test_payments.py::test_create_payment_unknown_customer_404 PASSED
+tests/api/test_payments.py::test_get_payment_ok PASSED
+tests/api/test_payments.py::test_get_payment_by_id_ok PASSED
+tests/api/test_payments.py::test_get_payment_unknown_404_envelope PASSED
+tests/api/test_payments.py::test_idempotent_replay_same_payload_200 PASSED
+tests/api/test_payments.py::test_same_ref_different_amount_409 PASSED
+tests/api/test_payments.py::test_customer_payments_pagination PASSED
+tests/api/test_payments.py::test_customer_payments_limit_bounds_422 PASSED
+tests/api/test_payments.py::test_malformed_json_400_or_422 PASSED
+tests/api/test_payments.py::test_lookup_latency_p50_under_300ms PASSED
+tests/api/test_payments.py::test_duplicate_reference_lookup PASSED
+tests/api/test_payments.py::test_ready_503_when_db_down SKIPPED (set MINIPAY_ALLOW_DESTRUCTIVE=1 to stop Compose db)
+
+======================== 22 passed, 1 skipped in 7.36s ========================
