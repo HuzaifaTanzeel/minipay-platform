@@ -56,7 +56,9 @@ export function NewPaymentPage() {
           toast.success(
             replay ? "Idempotent replay: existing payment returned" : "Payment created"
           );
-          navigate(`/payments/${payment.transaction_ref}`);
+          navigate(`/payments/${payment.transaction_ref}`, {
+            state: { flash: replay ? "replayed" : "created" },
+          });
         },
         onError: (err) => {
           const e = err as unknown as ApiError;

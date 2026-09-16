@@ -29,6 +29,7 @@ seed.sql
 playwright-report/
 test-results/
 .playwright/
+pytest-cache-files*/
 
 # Editors and OS
 .idea/

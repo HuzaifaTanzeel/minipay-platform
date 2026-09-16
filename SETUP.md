@@ -2,12 +2,15 @@
 
 How to run what this repository currently ships. Credentials live in `.env` (copy from `.env.example`). Never commit `.env`, tokens, or private keys.
 
-**Current scope:** PostgreSQL 16, FastAPI, and the React UI via Docker Compose, plus schema, synthetic seed, SQL reports, optional pgAdmin, the L2 support CLI, and API pytest. Kubernetes manifests and UI automated tests are not in this tree yet.
+**Current scope:** PostgreSQL 16, FastAPI, and the React UI via Docker Compose, plus schema, synthetic seed, SQL reports, optional pgAdmin, the L2 support CLI, API pytest, and Playwright UI tests. Kubernetes manifests are not in this tree yet.
+
+Python tooling (API tests, UI tests, CLI tests, ruff) is installed into **`.venv`**. Do not `pip install` into the system interpreter.
 
 ## Prerequisites
 
 - Docker Desktop (or compatible Compose v2)
-- Python 3 on the PATH (`python` or `py` on Windows)
+- Python 3.12 on the PATH (`python` or `py` on Windows)
+- Ability to create a virtualenv (`python -m venv`)
 
 ## 1. Environment file
 
@@ -23,7 +26,7 @@ Set at least:
 - `PGADMIN_PASSWORD` — if you start the `tools` profile
 - `PGADMIN_EMAIL` — must be a normal address (for example `admin@example.com`). Values like `user@minipay.local` are rejected by pgAdmin 8.
 
-Keep `DB_NAME=minipay` and `DB_USER=minipay`.
+Keep `DB_NAME=minipay` and `DB_USER=minipay`. `MINIPAY_BASE_URL` defaults to the API (`http://localhost:8000`); `MINIPAY_UI_URL` defaults to the Compose UI (`http://localhost:8080`).
 
 ## 2. Start the stack
 
@@ -44,12 +47,39 @@ python database/generate_data.py | docker compose exec -T db psql -U minipay -d 
 
 Checks and expected counts: [database/README.md](database/README.md).
 
-## 4. L2 support CLI
+## 4. Python virtualenv (once)
 
-Install CLI deps (once), then point it at the same database as Compose:
+One file, one venv, all pytest suites:
 
 ```powershell
-python -m pip install -r python/requirements.txt
+.\scripts\setup-venv.ps1
+.\.venv\Scripts\Activate.ps1
+```
+
+Linux / WSL:
+
+```bash
+chmod +x scripts/setup-venv.sh
+./scripts/setup-venv.sh
+source .venv/bin/activate
+```
+
+The script creates `.venv` if needed, installs [requirements-dev.txt](requirements-dev.txt) (API + UI + CLI + ruff), and downloads Playwright’s Chromium. Playwright browsers are not on PyPI; that last step cannot live in the requirements file.
+
+Already have a venv and only need to refresh deps:
+
+```powershell
+.\.venv\Scripts\python.exe -m pip install -r requirements-dev.txt
+.\.venv\Scripts\python.exe -m playwright install chromium
+```
+
+If `Activate.ps1` is blocked: `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`.
+
+## 5. L2 support CLI
+
+With the venv activated, point the CLI at the same database as Compose:
+
+```powershell
 $env:MINIPAY_DB_DSN = "postgresql://minipay:<password>@localhost:5432/minipay"
 python python/support_tool.py --transaction TXN00000001
 python python/support_tool.py --transaction TXN00004999 --json
@@ -58,12 +88,11 @@ python -m pytest python/tests -q
 
 Use the same password as `DB_PASSWORD` in `.env`. Config, exit codes, and sample output: [python/README.md](python/README.md).
 
-## 5. API tests
+## 6. API tests
 
-Compose `api` must be healthy and the database seeded. Install test deps once, then:
+Compose `api` must be healthy and the database seeded. Venv activated:
 
 ```powershell
-python -m pip install -r backend/requirements-dev.txt
 python -m pytest tests/api -v
 ```
 
@@ -71,7 +100,39 @@ python -m pytest tests/api -v
 
 Stopping Postgres for `/ready` 503 is skipped unless you set `MINIPAY_ALLOW_DESTRUCTIVE=1` (the suite restarts `db` afterwards).
 
-## 6. Optional pgAdmin
+## 7. UI tests
+
+Run every command below from the **repository root**, with the venv activated (step 4). Compose **`web`** must be healthy on http://localhost:8080 (API-only on 8000 is not enough).
+
+**Headless** (default — no browser window; same as CI). Writes [evidence/ui/report.html](evidence/ui/report.html):
+
+```powershell
+python -m pytest -c tests/ui/pytest.ini tests/ui -v
+```
+
+**Headed** (Chromium window opens so you can watch the five journeys):
+
+```powershell
+python -m pytest -c tests/ui/pytest.ini tests/ui -v --headed
+```
+
+**Headed, slowed down** (easier to see clicks and navigation):
+
+```powershell
+python -m pytest -c tests/ui/pytest.ini tests/ui -v --headed --slowmo 400
+```
+
+One journey only (negative amount):
+
+```powershell
+python -m pytest -c tests/ui/pytest.ini tests/ui/test_journeys.py::test_create_payment_invalid_amount_shows_validation -v --headed --slowmo 400
+```
+
+Linux / WSL (headless): `make test-ui` after `make setup-venv`. Headed on WSL needs a display (WSLg or an X server); on Windows run the PowerShell commands above instead.
+
+Expect **5 passed**. Saved HTML reports (open in a browser, no extra server): [report-before.html](evidence/ui/report-before.html) (1 failed, before the amount check) vs [report-after.html](evidence/ui/report-after.html) (5 passed). Page objects and env vars: [tests/ui/README.md](tests/ui/README.md).
+
+## 8. Optional pgAdmin
 
 ```powershell
 docker compose --profile tools up -d
@@ -91,6 +152,19 @@ Data remains in the `pgdata` volume. To delete schema and seed:
 docker compose down -v
 ```
 
+## Troubleshooting
+
+| Symptom | What to check |
+|---|---|
+| `Activate.ps1` cannot be loaded | `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`, then activate again |
+| `playwright` / browser missing | Re-run `python -m playwright install chromium` inside `.venv`. On Linux/WSL use `python -m playwright install --with-deps chromium` |
+| UI tests: connection refused on 8080 | `docker compose ps` — `web` must be **healthy**. API on 8000 is a different process |
+| UI tests: `TXN00000001` not found | Seed has not been loaded (step 3) |
+| API tests: missing `API_KEY` | Copy `.env.example` to `.env` and set `API_KEY` |
+| Mix-up of 8000 vs 8080 | `MINIPAY_BASE_URL` = API (8000). `MINIPAY_UI_URL` = console (8080) |
+| `docker compose config` asks for `DB_PASSWORD` / `API_KEY` | `.env` missing or those values empty |
+| `--headed` but no Chromium window | Run the PowerShell commands on Windows. WSL headed mode needs WSLg or an X server |
+
 ## What is not set up yet
 
-Kubernetes, Rancher, and UI pytest. Those will be documented here as they land. Full layout (architecture, AI usage, investigation, tests, evidence) is listed in the repository root README.
+Kubernetes and Rancher. Those will be documented here as they land. Full layout (architecture, AI usage, investigation, tests, evidence) is listed in the repository root README.

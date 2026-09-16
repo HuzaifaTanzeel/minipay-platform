@@ -1,5 +1,5 @@
 import { ArrowLeft } from "lucide-react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 
 import { CallbackTimeline } from "@/components/CallbackTimeline";
 import { ErrorState } from "@/components/ErrorState";
@@ -13,9 +13,11 @@ import { formatDateTime, formatMoney } from "@/lib/utils";
 
 export function PaymentDetailPage() {
   const { ref } = useParams<{ ref: string }>();
+  const location = useLocation();
   const { data, isLoading, error } = usePayment(ref);
 
   const apiError = error as unknown as ApiError | null;
+  const flash = (location.state as { flash?: string } | null)?.flash;
 
   return (
     <div>
@@ -24,6 +26,25 @@ export function PaymentDetailPage() {
           <ArrowLeft className="h-4 w-4" /> Back to payments
         </Link>
       </Button>
+
+      {flash === "created" && (
+        <div
+          className="mb-4 rounded-md border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800"
+          data-testid="success-banner"
+          role="status"
+        >
+          Payment created.
+        </div>
+      )}
+      {flash === "replayed" && (
+        <div
+          className="mb-4 rounded-md border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-800"
+          data-testid="success-banner"
+          role="status"
+        >
+          Idempotent replay: existing payment returned.
+        </div>
+      )}
 
       {isLoading && <Skeleton className="h-64 w-full" />}
 
@@ -59,7 +80,7 @@ export function PaymentDetailPage() {
                   </p>
                   <h1 className="font-mono text-2xl font-bold">{data.transaction_ref}</h1>
                 </div>
-                <StatusBadge status={data.status} />
+                <StatusBadge status={data.status} testId="result-status" />
               </div>
 
               <dl className="mt-6 grid grid-cols-2 gap-x-6 gap-y-4 text-sm">

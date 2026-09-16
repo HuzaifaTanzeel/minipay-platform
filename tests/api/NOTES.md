@@ -3,9 +3,12 @@
 Run the suite against a live Compose API (not an in-process client):
 
 ```powershell
-python -m pip install -r backend/requirements-dev.txt
+.\scripts\setup-venv.ps1
+.\.venv\Scripts\Activate.ps1
 python -m pytest tests/api -v
 ```
+
+Install is the same venv as UI and CLI tests ([requirements-dev.txt](../../requirements-dev.txt)). Do not pip-install into the system interpreter.
 
 `MINIPAY_BASE_URL` defaults to `http://localhost:8000`. `API_KEY` (or `MINIPAY_API_KEY`) is read from the environment or from repo-root `.env`. Stopping Postgres is skipped unless `MINIPAY_ALLOW_DESTRUCTIVE=1`.
 

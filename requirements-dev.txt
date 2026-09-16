@@ -1,0 +1,9 @@
+# All Python test, lint, and CLI tooling. Install into .venv — do not use system pip.
+#
+#   Windows:  .\scripts\setup-venv.ps1
+#   Linux:    ./scripts/setup-venv.sh
+#
+# Then:  python -m playwright install chromium
+# (the setup scripts already do that step).
+-r backend/requirements-dev.txt
+-r python/requirements.txt
