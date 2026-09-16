@@ -1,0 +1,14 @@
+﻿GET http://localhost:8080/api/payments/TXN00004999
+(nginx injects X-API-Key; key not recorded)
+
+HTTP headers:
+HTTP/1.1 500 Internal Server Error
+Server: nginx/1.27.5
+Date: Wed, 16 Sep 2026 15:39:25 GMT
+Content-Type: application/json
+Content-Length: 139
+Connection: keep-alive
+
+
+Body:
+{"error":{"code":"INTERNAL_ERROR","message":"Unexpected error. Quote the request_id when contacting support.","request_id":"54a82d7d3bfd"}}
