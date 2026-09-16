@@ -1,0 +1,14 @@
+apiVersion: 1
+
+providers:
+  - name: MiniPay
+    orgId: 1
+    folder: MiniPay
+    folderUid: minipay
+    type: file
+    disableDeletion: false
+    allowUiUpdates: true
+    updateIntervalSeconds: 60
+    options:
+      path: /var/lib/grafana/dashboards
+      foldersFromFilesStructure: false
