@@ -15,3 +15,14 @@ def test_ready_ok(anon):
     body = r.json()
     assert body["status"] == "ready"
     assert body["checks"]["database"] == "ok"
+
+
+def test_metrics_ok_without_key(anon):
+    """Prometheus scrape target is unauthenticated and exposes histograms."""
+    # 401 is still an instrumented response; buckets appear after at least one.
+    anon.request("GET", "/api/payments/TXN00000001")
+    r = anon.request("GET", "/metrics")
+    assert r.status_code == 200
+    body = r.text
+    assert "http_request_duration_seconds_bucket" in body
+    assert "http_requests_total" in body

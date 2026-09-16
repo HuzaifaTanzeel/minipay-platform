@@ -1,0 +1,17 @@
+groups:
+  - name: minipay-api
+    rules:
+      - alert: High5xxRatio
+        expr: |
+          sum(rate(http_requests_total{status=~"5.*"}[5m]))
+          /
+          clamp_min(sum(rate(http_requests_total[5m])), 1e-6)
+          > 0.01
+        for: 5m
+        labels:
+          severity: page
+        annotations:
+          summary: API 5xx ratio above 1% for 5 minutes
+          description: >
+            Page on error rate, not on average latency. A healthy average can
+            hide a slow tail; 5xx is a symptom operators should see first.

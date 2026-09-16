@@ -10,6 +10,7 @@ import uuid
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request
+from prometheus_fastapi_instrumentator import Instrumentator, metrics
 
 from .config import settings
 from .db import pool
@@ -57,3 +58,14 @@ async def request_context(request: Request, call_next):
 
 for r in (health.router, customers.router, payments.router):
     app.include_router(r)
+
+# Unauthenticated scrape target for Prometheus (same class as /health).
+# Tuned buckets: this API is typically sub-second; default 10s buckets hide p95.
+_LATENCY_BUCKETS = (0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1.0, 2.5)
+_instrumentator = Instrumentator(
+    should_group_status_codes=True,
+    excluded_handlers=["/health", "/ready", "/metrics"],
+)
+_instrumentator.add(metrics.latency(buckets=_LATENCY_BUCKETS))
+_instrumentator.add(metrics.requests())
+_instrumentator.instrument(app).expose(app, include_in_schema=False)

@@ -45,6 +45,7 @@ The client generates `transaction_ref`. The server must store the **result**. Sa
 - 4xx: caller bug (validation, missing key, unknown customer). Fix the request; do not retry.
 - 5xx: our bug or an outage. Retry with backoff, then page. Quote `error.request_id` / `X-Request-ID` in logs.
 - Duplicate seed refs such as `TXN00004999` return 409 `REFERENCE_AMBIGUOUS` with `error.ids` (both transaction ids). That is a 4xx data condition, not a 5xx crash. Ops can load each row with `GET /api/payments/by-id/{id}`.
+- `GET /metrics` is unauthenticated (Prometheus scrape). It is not under `/api/`.
 
 ## Callbacks
 

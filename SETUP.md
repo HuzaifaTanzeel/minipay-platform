@@ -2,7 +2,7 @@
 
 How to run what this repository currently ships. Credentials live in `.env` (copy from `.env.example`). Never commit `.env`, tokens, or private keys.
 
-**Current scope:** PostgreSQL 16, FastAPI, and the React UI via Docker Compose, plus schema, synthetic seed, SQL reports, optional pgAdmin, the L2 support CLI, API pytest, and Playwright UI tests. Kubernetes manifests are not in this tree yet.
+**Current scope:** PostgreSQL 16, FastAPI, and the React UI via Docker Compose, plus schema, synthetic seed, SQL reports, optional pgAdmin, optional Prometheus/Grafana, the L2 support CLI, API pytest, and Playwright UI tests. Kubernetes manifests are not in this tree yet.
 
 Python tooling (API tests, UI tests, CLI tests, ruff) is installed into **`.venv`**. Do not `pip install` into the system interpreter.
 
@@ -25,6 +25,7 @@ Set at least:
 - `DATABASE_URL` and `MINIPAY_DB_DSN` — same password as `DB_PASSWORD`
 - `PGADMIN_PASSWORD` — if you start the `tools` profile
 - `PGADMIN_EMAIL` — must be a normal address (for example `admin@example.com`). Values like `user@minipay.local` are rejected by pgAdmin 8.
+- `GRAFANA_ADMIN_PASSWORD` — Grafana admin password when you start the `observability` profile (defaults to `CHANGE_ME` if unset)
 
 Keep `DB_NAME=minipay` and `DB_USER=minipay`. `MINIPAY_BASE_URL` defaults to the API (`http://localhost:8000`); `MINIPAY_UI_URL` defaults to the Compose UI (`http://localhost:8080`).
 
@@ -140,13 +141,31 @@ docker compose --profile tools up -d
 
 Open http://localhost:5050. Register a server with host **`db`**, port `5432`. Details: [database/README.md](database/README.md).
 
+## 9. Optional Prometheus and Grafana
+
+Not part of the default `docker compose up`. After the core stack is healthy:
+
+```powershell
+docker compose --profile observability up -d --build
+```
+
+Set `GRAFANA_ADMIN_PASSWORD` in `.env` (see `.env.example`); if unset, Grafana uses `CHANGE_ME`.
+
+| URL | Login |
+|---|---|
+| http://localhost:3000 | Grafana — `admin` / `GRAFANA_ADMIN_PASSWORD` |
+| http://localhost:9090 | Prometheus (no login) |
+| http://localhost:8000/metrics | API scrape target (no API key) |
+
+The MiniPay overview dashboard is editable (delete panels, change PromQL, Save). UI edits survive restart; `docker compose down -v` wipes them. Percentiles vs averages, datasources, and the later Kubernetes mapping: [observability/README.md](observability/README.md).
+
 ## Teardown
 
 ```powershell
-docker compose --profile tools down
+docker compose --profile tools --profile observability down
 ```
 
-Data remains in the `pgdata` volume. To delete schema and seed:
+Data remains in the `pgdata` volume (Grafana UI edits stay in `grafana-data`). To delete schema, seed, and Grafana’s saved dashboards:
 
 ```powershell
 docker compose down -v

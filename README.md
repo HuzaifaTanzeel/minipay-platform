@@ -2,7 +2,7 @@
 
 Small payment-processing platform: a REST API and web UI in front of PostgreSQL, with Kubernetes deployment, automated tests, SQL investigation, and L2 support tooling. Built to practise reproducible local/K8s setups, safe config and secrets, and operational documentation.
 
-**Status:** local PostgreSQL, FastAPI, and React UI via Docker Compose, schema, seed, SQL reports, L2 support CLI, API pytest, Playwright UI tests, optional pgAdmin. Cluster manifests are not in the default path yet.
+**Status:** local PostgreSQL, FastAPI, and React UI via Docker Compose, schema, seed, SQL reports, L2 support CLI, API pytest, Playwright UI tests, optional pgAdmin, optional Prometheus/Grafana. Cluster manifests are not in the default path yet.
 
 ## Quick start
 
@@ -31,6 +31,7 @@ Full steps: [SETUP.md](SETUP.md). Database notes: [database/README.md](database/
 | `frontend/` | React UI (served by nginx in Compose) |
 | `sql/` | Reporting queries and performance notes |
 | `kubernetes/` | Cluster manifests (planned) |
+| [observability/](observability/README.md) | Optional Prometheus + Grafana (`docker compose --profile observability up -d`) |
 | [python/](python/README.md) | L2 support CLI (`python python/support_tool.py --transaction REF`) |
 | [tests/api/](tests/api/NOTES.md) | API pytest (`python -m pytest tests/api -v`) |
 | [tests/ui/](tests/ui/README.md) | Playwright UI tests — headless: `python -m pytest -c tests/ui/pytest.ini tests/ui -v` · headed: add `--headed` |
