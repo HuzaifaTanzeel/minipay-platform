@@ -42,6 +42,17 @@ def test_search_unknown_reference_shows_error(page, base_url):
     expect(PaymentDetailPage(page).error).to_be_visible()
 
 
+def test_search_duplicate_reference_shows_clear_message(page, base_url):
+    """duplicate seed ref shows REFERENCE_AMBIGUOUS and both transaction ids."""
+    SearchPage(page, base_url).open().search("TXN00004999")
+    detail = PaymentDetailPage(page)
+    expect(detail.error).to_be_visible()
+    expect(detail.error).to_contain_text("REFERENCE_AMBIGUOUS")
+    expect(detail.ambiguous_ids).to_be_visible()
+    expect(detail.ambiguous_ids).to_contain_text("4999")
+    expect(detail.ambiguous_ids).to_contain_text("5000")
+
+
 def test_create_payment_invalid_amount_shows_validation(page, base_url):
     """negative amount is rejected in the form without a round-trip."""
     form = PaymentFormPage(page, base_url).open()

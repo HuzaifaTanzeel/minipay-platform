@@ -48,8 +48,6 @@ async def api_error_handler(_: Request, exc: ApiError) -> JSONResponse:
 
 
 async def unhandled_handler(_: Request, exc: Exception) -> JSONResponse:
-    # INCIDENT-001 surfaces here: an uncaught MultipleRowsError becomes a
-    # generic 500 with a request_id the operator can grep for.
     log.exception("unhandled error")
     return envelope(
         500,

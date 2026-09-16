@@ -21,7 +21,7 @@ Install is the same venv as UI and CLI tests ([requirements-dev.txt](../../requi
 | Unknown resources | `test_create_payment_unknown_customer_404`, `test_get_payment_unknown_404_envelope` |
 | Auth | `test_missing_api_key_401`, `test_wrong_api_key_403`, `test_health_needs_no_key` |
 | Idempotent / duplicate submit | `test_idempotent_replay_same_payload_200`, `test_same_ref_different_amount_409`, `test_create_customer_duplicate_409` |
-| Server error where practical | `test_duplicate_reference_lookup` (500 today), `test_ready_503_when_db_down` |
+| Server error where practical | `test_duplicate_reference_lookup` (409 `REFERENCE_AMBIGUOUS`), `test_ready_503_when_db_down` |
 | Schema | `test_create_payment_201_schema` (`jsonschema`) |
 | Response time | `test_lookup_latency_p50_under_300ms` |
 
@@ -44,7 +44,7 @@ The client generates `transaction_ref`. The server must store the **result**. Sa
 
 - 4xx: caller bug (validation, missing key, unknown customer). Fix the request; do not retry.
 - 5xx: our bug or an outage. Retry with backoff, then page. Quote `error.request_id` / `X-Request-ID` in logs.
-- Duplicate seed refs such as `TXN00004999` currently 500 `INTERNAL_ERROR` (Incident 1). After the lookup fix this should be 409 `REFERENCE_AMBIGUOUS`.
+- Duplicate seed refs such as `TXN00004999` return 409 `REFERENCE_AMBIGUOUS` with `error.ids` (both transaction ids). That is a 4xx data condition, not a 5xx crash. Ops can load each row with `GET /api/payments/by-id/{id}`.
 
 ## Callbacks
 

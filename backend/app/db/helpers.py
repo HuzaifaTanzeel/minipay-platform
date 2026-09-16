@@ -5,11 +5,9 @@ from typing import Any
 class MultipleRowsError(RuntimeError):
     """Raised when a query expected to match one row matched more than one.
 
-    NOTE (INCIDENT-001): the seed data intentionally contains duplicate
-    transaction_ref values and the schema does not enforce uniqueness. The
-    payment-lookup path uses fetch_one_strict and leaves this exception
-    unhandled, so those ~10 references return HTTP 500. This is the planted
-    defect investigated in Phase 7; do not "fix" it here.
+    Seed data contains duplicate transaction_ref values and the schema does
+    not enforce uniqueness. Callers that assume a single payment per ref
+    (GET /api/payments/{ref}) must handle this; do not swallow it here.
     """
 
 

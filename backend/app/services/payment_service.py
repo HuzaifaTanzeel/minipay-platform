@@ -14,6 +14,7 @@ from dataclasses import dataclass
 
 from psycopg_pool import ConnectionPool
 
+from ..db.helpers import MultipleRowsError
 from ..errors import ApiError
 from ..repositories.interfaces import CustomerRepository, PaymentRepository
 
@@ -79,12 +80,24 @@ class PaymentService:
     def get_payment(self, ref: str) -> dict:
         """Look up a payment by reference, including its callbacks.
 
-        Uses the strict single-row repository method; on duplicate references
-        the underlying MultipleRowsError propagates and becomes a 500
-        (INCIDENT-001). Intentionally not caught here.
+        Duplicate seed refs raise MultipleRowsError from fetch_one_strict.
+        That is a data-integrity condition, not an unexpected crash: return
+        409 REFERENCE_AMBIGUOUS with the row ids so ops can load each via
+        GET /api/payments/by-id/{id}.
         """
         with self._pool.connection() as conn, conn.cursor() as cur:
-            row = self._payments.get_by_ref(cur, ref)
+            try:
+                row = self._payments.get_by_ref(cur, ref)
+            except MultipleRowsError:
+                rows = self._payments.find_all_by_ref(cur, ref)
+                ids = [r["id"] for r in rows]
+                log.warning("ambiguous reference", extra={"ref": ref, "ids": ids})
+                raise ApiError(
+                    409,
+                    "REFERENCE_AMBIGUOUS",
+                    "reference maps to multiple transactions; use /api/payments/by-id/{id}",
+                    ids=ids,
+                )
             if not row:
                 raise ApiError(404, "PAYMENT_NOT_FOUND", f"payment {ref} not found")
             row["callbacks"] = self._payments.callbacks_for(cur, row["id"])

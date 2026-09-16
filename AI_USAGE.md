@@ -17,7 +17,7 @@ I used Cursor while building this. I still ran everything locally, edited what i
 ## Some actual asks
 
 - How do I record `EXPLAIN (ANALYZE, BUFFERS)` so before/after is comparable, not just “it got faster”
-- Build a support CLI that still works if payment lookup is 500
+- Build a support CLI that still works if the API is down or lookup fails
 - SETUP commands that work in PowerShell, not only bash
 
 
@@ -34,4 +34,4 @@ Same for SQL: I ran the statements in psql, not just from the chat.
 
 ## Something I changed
 
-First version of the CLI called `GET /api/payments/{ref}`. That is useless for `TXN00004999` because the API 500s. I made it query Postgres and return every matching row instead, so you still get the duplicate warning and a next step.
+First version of the CLI called `GET /api/payments/{ref}`. That hid the duplicate rows (the API used to 500 on `TXN00004999`). I made it query Postgres and return every matching row instead, so you still get the duplicate warning and a next step.

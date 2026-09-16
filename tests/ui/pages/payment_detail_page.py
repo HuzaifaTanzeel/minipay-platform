@@ -20,3 +20,7 @@ class PaymentDetailPage:
     @property
     def success_banner(self):
         return self.p.get_by_test_id("success-banner")
+
+    @property
+    def ambiguous_ids(self):
+        return self.p.get_by_test_id("ambiguous-ids")

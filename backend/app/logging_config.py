@@ -28,7 +28,7 @@ class JsonFormatter(logging.Formatter):
         if record.exc_info:
             payload["exc"] = self.formatException(record.exc_info)
         # Structured extras attached via logger.info(..., extra={...}).
-        for key in ("method", "path", "status", "duration_ms"):
+        for key in ("method", "path", "status", "duration_ms", "ref", "ids"):
             if hasattr(record, key):
                 payload[key] = getattr(record, key)
         return json.dumps(payload)

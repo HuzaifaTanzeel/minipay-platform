@@ -51,22 +51,22 @@ export function PaymentDetailPage() {
       {apiError && (
         <ErrorState
           error={apiError}
-          title={
-            apiError.status === 500
-              ? "This reference could not be resolved"
-              : apiError.status === 404
-                ? "Payment not found"
-                : undefined
-          }
+          title={apiError.status === 404 ? "Payment not found" : undefined}
         />
       )}
 
-      {apiError?.status === 500 && (
-        <p className="mt-3 max-w-2xl text-sm text-muted-foreground" data-testid="incident-hint">
-          The reference <span className="font-mono">{ref}</span> maps to more than one
-          transaction in the data, and the lookup endpoint assumes references are unique. This
-          is a known data-integrity defect under investigation (INCIDENT-001).
-        </p>
+      {apiError?.code === "REFERENCE_AMBIGUOUS" && apiError.ids && apiError.ids.length > 0 && (
+        <ul
+          className="mt-3 max-w-2xl list-disc space-y-1 pl-5 text-sm text-muted-foreground"
+          data-testid="ambiguous-ids"
+        >
+          {apiError.ids.map((id) => (
+            <li key={id}>
+              Transaction id <span className="font-mono">{id}</span> — look up with{" "}
+              <span className="font-mono">GET /api/payments/by-id/{id}</span>
+            </li>
+          ))}
+        </ul>
       )}
 
       {data && (
