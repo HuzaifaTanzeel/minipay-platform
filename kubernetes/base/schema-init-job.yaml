@@ -1,0 +1,38 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: minipay-schema-init
+  namespace: minipay
+spec:
+  backoffLimit: 8
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: psql
+          image: postgres:16-alpine
+          command:
+            - sh
+            - -c
+            - |
+              until pg_isready -h minipay-db -U minipay -d minipay; do sleep 2; done
+              psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f /schema/schema.sql
+          env:
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: minipay-secrets
+                  key: DB_PASSWORD
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: minipay-secrets
+                  key: DATABASE_URL
+          volumeMounts:
+            - name: schema
+              mountPath: /schema
+              readOnly: true
+      volumes:
+        - name: schema
+          configMap:
+            name: minipay-schema

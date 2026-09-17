@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: minipay-api
+  namespace: minipay
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: minipay-api
+  template:
+    metadata:
+      labels:
+        app: minipay-api
+    spec:
+      containers:
+        - name: api
+          image: minipay-api:1.0.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8000
+          envFrom:
+            - configMapRef:
+                name: minipay-config
+            - secretRef:
+                name: minipay-secrets
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: minipay-api
+  namespace: minipay
+spec:
+  type: ClusterIP
+  selector:
+    app: minipay-api
+  ports:
+    - name: http
+      port: 80
+      targetPort: http

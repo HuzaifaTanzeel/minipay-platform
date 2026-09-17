@@ -1,4 +1,4 @@
-.PHONY: setup-venv test-api test-ui test-ui-headed test-cli
+.PHONY: setup-venv test-api test-ui test-ui-headed test-cli k8s-up k8s-down k8s-smoke
 
 PYTHON ?= .venv/bin/python
 
@@ -16,3 +16,12 @@ test-ui-headed:
 
 test-cli:
 	$(PYTHON) -m pytest python/tests -q
+
+k8s-up:
+	bash scripts/k8s-up.sh
+
+k8s-down:
+	bash scripts/k8s-down.sh
+
+k8s-smoke:
+	bash scripts/k8s-smoke.sh

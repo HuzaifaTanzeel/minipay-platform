@@ -11,7 +11,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY app ./app
 
-# Run as a non-root user (matches Kubernetes runAsUser: 10001 in later phases).
+# Run as a non-root user (uid 10001).
 RUN useradd -r -u 10001 app && chown -R app /srv
 USER app
 

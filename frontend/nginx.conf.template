@@ -19,6 +19,16 @@ server {
         proxy_set_header X-API-Key "${API_KEY}";
     }
 
+    # Probes and ops checks through the same Ingress as the UI (no API key).
+    location = /health {
+        proxy_pass http://${API_UPSTREAM};
+        proxy_set_header Host $host;
+    }
+    location = /ready {
+        proxy_pass http://${API_UPSTREAM};
+        proxy_set_header Host $host;
+    }
+
     # SPA history-mode fallback.
     location / {
         try_files $uri $uri/ /index.html;
