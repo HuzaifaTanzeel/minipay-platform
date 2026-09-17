@@ -8,7 +8,11 @@ Start Docker Desktop. Copy `.env.example` to `.env` and replace every `CHANGE_ME
 copy .env.example .env
 ```
 
-How the pieces connect: [ARCHITECTURE.md](ARCHITECTURE.md). Extra commands: [SETUP.md](SETUP.md). AI tools: [AI_USAGE.md](AI_USAGE.md).
+How the pieces connect (detail): [ARCHITECTURE.md](ARCHITECTURE.md). Extra commands: [SETUP.md](SETUP.md). AI tools: [AI_USAGE.md](AI_USAGE.md).
+
+![MiniPay high-level components: public browser, Traefik ingress, k3d master and agent nodes, private web/API/Postgres services and pods, and secrets](docs/architecture/minipay-high-level.png)
+
+Public UI on **8080**; API and database stay in-cluster on the k3d path (see [ARCHITECTURE.md](ARCHITECTURE.md)).
 
 The rest of this file is a **walkthrough in task order**. Each section has: what to run, then where the work and evidence are.
 
