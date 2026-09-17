@@ -83,38 +83,63 @@ Pod status: `minipay-api`, `minipay-web`, `minipay-db-0` Running; `minipay-schem
 
 ## Pod logs
 
-*(Screenshot pending: Workloads → Pods → minipay-api → Logs.)*
+`minipay-api` pod — API access logs (`/health`, `/ready`, `/api/payments`).
+
+![API pod logs](rancher/07-api-pod-logs.png)
 
 ---
 
 ## Environment / config
 
-*(Screenshot pending: Deployments → minipay-api → Config → Environment.)*
+Deployment **Related Resources** — refers to `minipay-config` ConfigMap and `minipay-secrets` Secret.
+
+![Deployment related resources](rancher/08-api-deployment-related.png)
+
+Secret keys (`API_KEY`, `DATABASE_URL`, `DB_PASSWORD`) — values redacted in UI.
+
+![Secret configuration](rancher/09-api-secret-config.png)
+
+---
+
+## Scale (3 replicas)
+
+Scaled `minipay-api` from 1 → 3 in Rancher (Ready 3/3).
+
+![Scale to 3 replicas](rancher/10-scale-api-3.png)
+
+---
+
+## Redeploy
+
+Redeploy confirmation for `minipay-api` in Rancher.
+
+![Redeploy deployment](rancher/11-redeploy-api.png)
 
 ---
 
 ## Scale and rollout (kubectl verification)
-
-After scale/redeploy in Rancher UI:
 
 ```bash
 huzaifa@H:/mnt/d/Interviews/Paysys/minipay-platform$ kubectl -n minipay get pods -l app=minipay-api
 kubectl -n minipay rollout status deploy/minipay-api --timeout=120s
 kubectl -n minipay get deploy minipay-api
 NAME                           READY   STATUS    RESTARTS   AGE
-minipay-api-7d85dbd44c-62bsq   1/1     Running   0          89m
+minipay-api-6ccdb787c9-2frp9   1/1     Running   0          50s
+minipay-api-6ccdb787c9-p2jvr   1/1     Running   0          40s
+minipay-api-6ccdb787c9-t5nvw   1/1     Running   0          62s
 deployment "minipay-api" successfully rolled out
 NAME          READY   UP-TO-DATE   AVAILABLE   AGE
-minipay-api   1/1     1            1           15h
+minipay-api   3/3     3            3           24h
+huzaifa@H:/mnt/d/Interviews/Paysys/minipay-platform$
 ```
-
-*(Add screenshots after scaling minipay-api to 3 replicas and Redeploy in Rancher.)*
 
 ---
 
 ## Nodes — resource usage
 
-*(Screenshot pending: Cluster → Nodes.)*
+Cluster nodes — CPU, RAM, and pod counts per node.
+
+![Nodes resource usage](rancher/12-nodes-resources.png)
 
 ---
 
