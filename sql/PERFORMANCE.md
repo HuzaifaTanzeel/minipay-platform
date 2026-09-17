@@ -29,4 +29,4 @@ Postgres uses a heap table plus B-tree indexes (not a SQL Server clustered prima
 
 ## Trade-off
 
-Indexes use disk and make inserts a bit heavier. Lookups stay cheap as the table grows. Default 50k seed for evaluators is still fine; 500k was for this measurement.
+Indexes use disk and make inserts a bit heavier. Lookups stay cheap as the table grows. A 50k seed is enough to exercise lookups; 500k was for this measurement.

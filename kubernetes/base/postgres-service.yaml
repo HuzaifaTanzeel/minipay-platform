@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: minipay-db
+  namespace: minipay
+spec:
+  type: ClusterIP
+  selector:
+    app: minipay-db
+  ports:
+    - name: pg
+      port: 5432
+      targetPort: pg
+---
+# Headless: StatefulSet DNS (minipay-db-0.minipay-db-headless).
+apiVersion: v1
+kind: Service
+metadata:
+  name: minipay-db-headless
+  namespace: minipay
+spec:
+  clusterIP: None
+  selector:
+    app: minipay-db
+  ports:
+    - name: pg
+      port: 5432
+      targetPort: pg

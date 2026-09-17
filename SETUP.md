@@ -2,15 +2,16 @@
 
 How to run what this repository currently ships. Credentials live in `.env` (copy from `.env.example`). Never commit `.env`, tokens, or private keys.
 
-**Current scope:** PostgreSQL 16, FastAPI, and the React UI via Docker Compose, plus schema, synthetic seed, SQL reports, optional pgAdmin, optional Prometheus/Grafana, the L2 support CLI, API pytest, and Playwright UI tests. Kubernetes manifests are not in this tree yet.
+**Current scope:** PostgreSQL 16, FastAPI, and the React UI via Docker Compose, plus schema, synthetic seed, SQL reports, optional pgAdmin, optional Prometheus/Grafana, the L2 support CLI, API pytest, Playwright UI tests, and Kubernetes manifests for **k3d** (not Minikube).
 
 Python tooling (API tests, UI tests, CLI tests, ruff) is installed into **`.venv`**. Do not `pip install` into the system interpreter.
 
 ## Prerequisites
 
-- Docker Desktop (or compatible Compose v2)
+- Docker Desktop (or compatible Compose v2), with WSL integration
 - Python 3.12 on the PATH (`python` or `py` on Windows)
 - Ability to create a virtualenv (`python -m venv`)
+- For Path B: Docker Desktop is enough as the engine. `./scripts/k8s-up.sh` installs `kubectl` and `k3d` into `~/.local/bin` if they are missing. On Windows run that script in **Ubuntu/WSL2** (Docker Desktop → Settings → Resources → WSL integration → enable Ubuntu). Do not install a second Docker Engine with `get.docker.com`.
 
 ## 1. Environment file
 
@@ -159,6 +160,31 @@ Set `GRAFANA_ADMIN_PASSWORD` in `.env` (see `.env.example`); if unset, Grafana u
 
 The MiniPay overview dashboard is editable (delete panels, change PromQL, Save). UI edits survive restart; `docker compose down -v` wipes them. Percentiles vs averages, datasources, and the later Kubernetes mapping: [observability/README.md](observability/README.md).
 
+## 10. Kubernetes (k3d)
+
+Not Minikube. Manifests stay split under [kubernetes/overlays/local](kubernetes/overlays/local). Operator steps: [kubernetes/RUNBOOK.md](kubernetes/RUNBOOK.md). Findings: [investigation/kubernetes-findings.md](investigation/kubernetes-findings.md).
+
+k3d Traefik uses host **8080**, same as Compose `web`. The script stops Compose `web` for you.
+
+From a clone, after `.env` has real `DB_PASSWORD` and `API_KEY` (never commit `.env`):
+
+```bash
+chmod +x scripts/k8s-up.sh scripts/k8s-down.sh scripts/k8s-smoke.sh
+./scripts/k8s-up.sh
+./scripts/k8s-smoke.sh
+```
+
+That is the whole Path B: install `kubectl`/`k3d` if missing, join group `docker` if `/var/run/docker.sock` is permission-denied (`sudo` once), create the cluster, build and import images, create `minipay-secrets` from `.env` (host **`minipay-db`**, not `localhost`), apply the overlay, wait for rollouts, and seed unless rows already exist. UI: http://localhost:8080 — look up `TXN00000001`. Workloads are in namespace `minipay`, not `default`.
+
+```bash
+SKIP_SEED=1 ./scripts/k8s-up.sh    # cluster only, empty tables
+./scripts/k8s-down.sh              # k3d cluster delete minipay
+```
+
+Do not apply [kubernetes/base/secret.example.yaml](kubernetes/base/secret.example.yaml) with real values. If `/ready` fails, `kubectl -n minipay port-forward svc/minipay-web 8080:80`. Rancher is not started by this script; import cluster `minipay` later from the kubeconfig `k3d` already wrote.
+
+macOS/Linux with Homebrew can still `brew install k3d kubectl`; the script will use them if they are on `PATH`.
+
 ## Teardown
 
 ```powershell
@@ -182,8 +208,10 @@ docker compose down -v
 | API tests: missing `API_KEY` | Copy `.env.example` to `.env` and set `API_KEY` |
 | Mix-up of 8000 vs 8080 | `MINIPAY_BASE_URL` = API (8000). `MINIPAY_UI_URL` = console (8080) |
 | `docker compose config` asks for `DB_PASSWORD` / `API_KEY` | `.env` missing or those values empty |
-| `--headed` but no Chromium window | Run the PowerShell commands on Windows. WSL headed mode needs WSLg or an X server |
+| k3d / kubectl not found | `./scripts/k8s-up.sh` installs both into `~/.local/bin`. Path B is not Minikube. On Windows use Ubuntu/WSL, not PowerShell |
+| k8s UI up but no payments | Re-run `./scripts/k8s-up.sh` (seeds when `transactions` is empty), or omit `SKIP_SEED=1` |
+| Compose `web` and k3d both want 8080 | `k8s-up.sh` runs `docker compose stop web` |
 
 ## What is not set up yet
 
-Kubernetes and Rancher. Those will be documented here as they land. Full layout (architecture, AI usage, investigation, tests, evidence) is listed in the repository root README.
+Rancher (import this k3d cluster later). Full layout is listed in the repository root README.
