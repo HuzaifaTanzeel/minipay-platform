@@ -39,7 +39,7 @@ Python tools (API tests, UI tests, CLI) share one venv: [SETUP.md](SETUP.md) §4
 
 Repo hygiene: [`.gitignore`](.gitignore) (`.env` is ignored). Commits are incremental; humans own git.
 
-Linux host notes and a health-check script belong in `evidence/linux.md` (not written yet). Command cheat sheet for logs and probes: [kubernetes/RUNBOOK.md](kubernetes/RUNBOOK.md) and [SETUP.md](SETUP.md).
+WSL2 host diagnostics (OS, CPU, memory, disk, ports, DNS, in-cluster service): [evidence/linux.md](evidence/linux.md). Command cheat sheet for logs and probes: [kubernetes/RUNBOOK.md](kubernetes/RUNBOOK.md) and [SETUP.md](SETUP.md).
 
 ---
 
@@ -89,8 +89,9 @@ The script installs `kubectl`/`k3d` if missing, may ask for `sudo` once (Docker 
 | Rollout, logs, `get endpoints` | [kubernetes/RUNBOOK.md](kubernetes/RUNBOOK.md) |
 | Defects in the original Deployment/Service | [kubernetes/legacy/api-deployment-v0.yaml](kubernetes/legacy/api-deployment-v0.yaml), [investigation/kubernetes-findings.md](investigation/kubernetes-findings.md) |
 | Live `kubectl` captures | [evidence/kubernetes/](evidence/kubernetes/) |
+| Rancher import and workload ops | [evidence/rancher.md](evidence/rancher.md), [evidence/rancher/](evidence/rancher/) |
 
-**Rancher** is not running yet. Import k3d cluster `minipay` later; procedure will go in `evidence/rancher.md`.
+**Rancher** (local Docker, optional): import k3d cluster `minipay` as **`minipay-local`**. UI: **`https://localhost:8443`** (MiniPay UI stays on **8080**). On WSL + Docker Desktop, set Global Settings **`server-url`** to **`https://host.docker.internal:8443`** so the cluster agent can reach Rancher. Procedure and screenshots: [evidence/rancher.md](evidence/rancher.md).
 
 ---
 
