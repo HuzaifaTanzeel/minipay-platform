@@ -1,0 +1,51 @@
+# Original v0 Deployment + Service from the first release attempt.
+# Retained for investigation/kubernetes-findings.md and INCIDENT-002.
+# Do not apply this file to namespace minipay. Use kubernetes/overlays/local.
+#
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: minipay-api
+  namespace: minipay-legacy
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: minipay-api
+  template:
+    metadata:
+      labels:
+        app: minipay-api
+    spec:
+      containers:
+        - name: api
+          image: minipay-api:1.0.0
+          ports:
+            - containerPort: 8000
+          envFrom:
+            - secretRef:
+                name: minipay-secrets
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 8000
+            initialDelaySeconds: 2
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: minipay-api
+  namespace: minipay-legacy
+spec:
+  selector:
+    app: minipay-api
+  ports:
+    - port: 80
+      targetPort: 8000

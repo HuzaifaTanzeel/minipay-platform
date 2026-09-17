@@ -1,0 +1,7 @@
+kubectl -n minipay-legacy get svc minipay-api -o wide
+Warning: v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+NAME          ENDPOINTS   AGE
+minipay-api   <none>      62m
+NAME          TYPE        CLUSTER-IP    EXTERNAL-IP   PORT(S)   AGE   SELECTOR
+minipay-api   ClusterIP   10.43.124.2   <none>        80/TCP    62m   app=minipay-backend
+huzaifa@H:/mnt/d/Interviews/Paysys/minipay-platform$

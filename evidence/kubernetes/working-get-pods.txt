@@ -1,0 +1,15 @@
+huzaifa@H:/mnt/d/Interviews/Paysys/minipay-platform$ cd /mnt/d/Interviews/Paysys/minipay-platform
+kubectl -n minipay get pods,endpoints
+Warning: v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+NAME                               READY   STATUS      RESTARTS       AGE
+pod/minipay-api-7d85dbd44c-gjxrh   1/1     Running     0              8m39s
+pod/minipay-db-0                   1/1     Running     1 (112m ago)   14h
+pod/minipay-schema-init-xsj79      0/1     Completed   0              14h
+pod/minipay-web-84b5fb475b-2lzkw   1/1     Running     1 (112m ago)   14h
+
+NAME                            ENDPOINTS         AGE
+endpoints/minipay-api           10.42.0.20:8000   14h
+endpoints/minipay-db            10.42.1.14:5432   14h
+endpoints/minipay-db-headless   10.42.1.14:5432   14h
+endpoints/minipay-web           10.42.1.13:80     14h
+huzaifa@H:/mnt/d/Interviews/Paysys/minipay-platform$
