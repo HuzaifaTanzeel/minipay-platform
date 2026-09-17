@@ -1,0 +1,5 @@
+huzaifa@H:/mnt/d/Interviews/Paysys/minipay-platform$ kubectl -n minipay-legacy get pods -o wide
+NAME                           READY   STATUS   RESTARTS     AGE   IP           NODE                   NOMINATED NODE   READINESS GATES
+minipay-api-556789956d-bqrwd   0/1     Error    1 (6s ago)   10s   10.42.0.23   k3d-minipay-server-0   <none>           <none>
+minipay-api-556789956d-p6f7m   0/1     Error    1 (6s ago)   10s   10.42.1.22   k3d-minipay-agent-0    <none>           <none>
+huzaifa@H:/mnt/d/Interviews/Paysys/minipay-platform$

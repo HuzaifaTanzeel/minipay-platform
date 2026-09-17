@@ -136,7 +136,7 @@ Watch the browser: add `--headed`. Journeys and CI notes: [tests/ui/README.md](t
 |---|---|---|
 | [investigation/INCIDENT-001-RCA.md](investigation/INCIDENT-001-RCA.md) | Duplicate `transaction_ref` lookup | [evidence/api/](evidence/api/) |
 | [investigation/kubernetes-findings.md](investigation/kubernetes-findings.md) | Broken v0 manifest | [evidence/kubernetes/](evidence/kubernetes/) |
-| INCIDENT-002 RCA | After live `minipay-legacy` capture | pending |
+| [investigation/INCIDENT-002-RCA.md](investigation/INCIDENT-002-RCA.md) | v0 deploy: READY 0/1, empty endpoints | [evidence/kubernetes/](evidence/kubernetes/) |
 | [investigation/INCIDENT-003-RCA.md](investigation/INCIDENT-003-RCA.md) | Slow search at volume | [evidence/sql/](evidence/sql/) |
 
 Index of post-mortems: [investigation/README.md](investigation/README.md).
