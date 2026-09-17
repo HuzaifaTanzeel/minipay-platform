@@ -15,6 +15,10 @@ I used Cursor while building this. I still ran everything locally, edited what i
 - Commit message / PR wording
 - Created API and UI Tests using Cursor, also created a negative Scneario to verify that the test fails by removing greater than 0 check on Payment page.
 - Created Grafana Dashbaord
+- Took Help for kubectl commands from Claude
+- Used AI for trouble shooting
+- created diagrams using claude
+- generated commands using cursor to test.
 
 ## Some actual asks
 
